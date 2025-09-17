@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', padding: 10, borderBottomWidth: 1, borderColor: '#ccc' },
   cell: { flex: 1, padding: 5 },
   actions: { flexDirection: 'row', justifyContent: 'flex-end' },
-  editButton: { backgroundColor: '#007bff', padding: 8, borderRadius: 5, marginRight: 10 },
+  editButton: { backgroundColor: '#ff00aaff', padding: 8, borderRadius: 5, marginRight: 10 },
   editButtonText: { color: '#fff', fontWeight: 'bold' },
 });
 
