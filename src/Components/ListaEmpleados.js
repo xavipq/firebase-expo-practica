@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   editButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#ff00aaff',
     padding: 8,
     borderRadius: 5,
   },
