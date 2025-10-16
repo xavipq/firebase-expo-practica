@@ -8,7 +8,7 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const { extra } = Constants.expoConfig;
 
-// Configuración Web de Firebase
+
 const firebaseConfig = {
   apiKey: extra.FIREBASE_API_KEY,
   authDomain: extra.FIREBASE_AUTH_DOMAIN,
@@ -17,10 +17,10 @@ const firebaseConfig = {
   appId: extra.FIREBASE_APP_ID,
 };
 
-// Inicializar Firebase
+
 const app = initializeApp(firebaseConfig);
 
-// Servicios
+
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 });

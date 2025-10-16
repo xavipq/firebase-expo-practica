@@ -7,14 +7,13 @@ const TablaProductos = ({ productos, eliminarProducto, editarProducto }) => {
     <View style={styles.container}>
       <Text style={styles.titulo}>Tabla de Productos</Text>
 
-      {/* Encabezado de la tabla */}
+
       <View style={[styles.fila, styles.encabezado]}>
         <Text style={[styles.celda, styles.textoEncabezado]}>Nombre</Text>
         <Text style={[styles.celda, styles.textoEncabezado]}>Precio</Text>
         <Text style={[styles.celda, styles.textoEncabezado]}>Acciones</Text>
       </View>
 
-      {/* Contenido de la tabla */}
       <View>
         {productos.map((item) => (
           <View key={item.id} style={styles.fila}>

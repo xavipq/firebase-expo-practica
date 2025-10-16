@@ -23,12 +23,11 @@ const Clientes = () => {
     }
   };
 
-  // Función de eliminación adaptada para "clientes"
   const eliminarCliente = async (id) => {
     try {
-      // Referencia al documento de la colección "clientes"
+
       await deleteDoc(doc(db, "clientes", id)); 
-      cargarDatos(); // recargar lista
+      cargarDatos(); 
     } catch (error) {
       console.error("Error al eliminar:", error);
     }
@@ -42,7 +41,7 @@ const Clientes = () => {
     <View style={styles.container}>
 <ScrollView>
       <FormularioClientes cargarDatos={cargarDatos} />
-      {/* Se añade el componente TablaClientes con los datos y la función de eliminación */}
+
       <TablaClientes 
         clientes={clientes}
         eliminarCliente={eliminarCliente} 

@@ -121,7 +121,7 @@ const Productos = ({ cerrarSesion }) => {
 
   return (
     <View style={styles.container}>
-      {/* ✅ BOTÓN DE CERRAR SESIÓN - AGREGADO AQUÍ */}
+
       <Button title="Cerrar Sesión" onPress={cerrarSesion} />
       
       <FormularioProductos

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-// Reutilizamos el BotonEliminarProducto para esta nueva tabla
+
 import BotonEliminarCliente from "./BotonEliminarCliente.js"; 
 
 const TablaClientes = ({ clientes, eliminarCliente }) => {
@@ -19,7 +19,7 @@ const TablaClientes = ({ clientes, eliminarCliente }) => {
       {/* Contenido de la tabla */}
       <ScrollView>
         {clientes.map((item) => (
-          // Usamos el ID del documento (ej: 27b6mAPzICRxoRE2zA1Z) como key
+
           <View key={item.id} style={styles.fila}> 
             {/* Campos del cliente de la imagen */}
             <Text style={styles.celda}>{item.nombre}</Text>
@@ -30,7 +30,6 @@ const TablaClientes = ({ clientes, eliminarCliente }) => {
             <View style={styles.celdaAcciones}>
               <BotonEliminarCliente
                 id={item.id}
-                // Cambiamos a eliminarCliente
                 eliminarCliente={eliminarCliente} 
               />
             </View>
@@ -41,7 +40,6 @@ const TablaClientes = ({ clientes, eliminarCliente }) => {
   );
 };
 
-// --- ESTILOS MODIFICADOS LIGERAMENTE PARA ACOMODAR UNA COLUMNA EXTRA ---
 
 const styles = StyleSheet.create({
   container: {
@@ -60,14 +58,14 @@ const styles = StyleSheet.create({
   encabezado: {
     backgroundColor: "#f0f0f0",
   },
-  // La celda ahora tiene un flex menor (flex: 1) para dar espacio a la columna extra
+
   celda: { 
     flex: 1, 
     fontSize: 16,
     textAlign: "center",
   },
   celdaAcciones: {
-    // La columna de acciones es más pequeña
+
     flex: 0.7, 
     flexDirection: "row",
     justifyContent: "center",

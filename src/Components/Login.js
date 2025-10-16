@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { signInWithEmailAndPassword } from 'firebase/auth'; 
 import { auth } from '../database/firebaseconfig.js';
 
-// ✅ STYLE SHEET ARRIBA - ANTES DEL COMPONENTE
+
 const styles = StyleSheet.create({  
   container: {
     flex: 1,
