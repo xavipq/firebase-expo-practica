@@ -1,7 +1,10 @@
+
+// components/BotonEliminarProducto.js
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 
 const BotonEliminarProducto = ({ id, eliminarProducto }) => {
+  
   const [visible, setVisible] = useState(false);
 
   const confirmarEliminar = () => {
@@ -11,12 +14,15 @@ const BotonEliminarProducto = ({ id, eliminarProducto }) => {
 
   return (
     <View>
+      {/* Botón pequeño */}
       <TouchableOpacity
         style={styles.boton}
         onPress={() => setVisible(true)}
       >
         <Text style={styles.textoBoton}>🗑️</Text>
       </TouchableOpacity>
+
+      {/* Modal de confirmación */}
       <Modal
         visible={visible}
         transparent
@@ -25,7 +31,8 @@ const BotonEliminarProducto = ({ id, eliminarProducto }) => {
       >
         <View style={styles.overlay}>
           <View style={styles.modal}>
-            <Text style={styles.texto}>¿Desea eliminar este producto?</Text>
+            <Text style={styles.texto}>¿Eliminar este producto?</Text>
+
             <View style={styles.fila}>
               <TouchableOpacity
                 style={[styles.botonAccion, styles.cancelar]}
@@ -33,6 +40,7 @@ const BotonEliminarProducto = ({ id, eliminarProducto }) => {
               >
                 <Text style={styles.textoAccion}>Cancelar</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
                 style={[styles.botonAccion, styles.confirmar]}
                 onPress={confirmarEliminar}
@@ -49,17 +57,14 @@ const BotonEliminarProducto = ({ id, eliminarProducto }) => {
 
 const styles = StyleSheet.create({
   boton: {
-    padding: 8,
+    padding: 4,
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
-    backgroundColor: "#dc3545",
+    backgroundColor: "#f3f3f7ff",
   },
-  textoBoton: { 
-    color: "#fff",
-    fontSize: 14,
-  },
+  textoBoton: { color: "white", fontSize: 14 },
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -83,7 +88,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cancelar: { backgroundColor: "#ccc" },
-  confirmar: { backgroundColor: "#dc3545" },
+  confirmar: { backgroundColor: "#e63946" },
   textoAccion: { color: "white", fontWeight: "bold" },
 });
 
