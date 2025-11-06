@@ -4,6 +4,9 @@ import { db } from "../database/firebaseconfig.js";
 import { collection, getDocs, doc, deleteDoc, addDoc, updateDoc } from "firebase/firestore";
 import FormularioProductos from "../Components/FormularioProductos.js";
 import TablaProductos from "../Components/TablaProductos.js";
+import * as FileSystem from "expo-file-system/legacy";
+import * as Sharing from "expo-sharing";
+import * as Clipboard from "expo-clipboard";
 
 const Productos = ({cerrarSesion}) => {
 

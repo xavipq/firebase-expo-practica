@@ -1,3 +1,6 @@
+import * as FileSystem from "expo-file-system/legacy";
+import * as Sharing from "expo-sharing";
+import * as Clipboard from "expo-clipboard";
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Alert } from "react-native";
 import { db } from "../database/firebaseconfig.js";
