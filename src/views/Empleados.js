@@ -1,12 +1,13 @@
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
-import * as Clipboard from "expo-clipboard";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, TouchableOpacity, Text } from "react-native";
 import { db } from "../database/firebaseconfig.js";
 import { collection, getDocs, deleteDoc, doc, addDoc, updateDoc } from "firebase/firestore";
 import FormularioEmpleados from "../Components/FormularioEmpleados.js";
 import ListaEmpleados from "../Components/ListaEmpleados.js";
+
+const API_URL = "https://1zay5ukg5f.execute-api.us-east-2.amazonaws.com/generarexcel";
 
 const Empleados = () => {
   const [empleados, setEmpleados] = useState([]);
@@ -16,113 +17,109 @@ const Empleados = () => {
 
   const cargarDatos = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "empleados"));
-      const data = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const snap = await getDocs(collection(db, "empleados"));
+      const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setEmpleados(data);
-      console.log("Empleados cargados:", data);
-    } catch (error) {
-      console.error("Error al cargar empleados:", error);
-      Alert.alert("Error", "No se pudieron cargar los empleados: " + error.message);
+    } catch (e) {
+      Alert.alert("Error", "No se cargaron los datos");
     }
   };
 
   const manejoCambio = (campo, valor) => {
-    setNuevoEmpleado((prev) => ({ ...prev, [campo]: valor }));
+    setNuevoEmpleado(prev => ({ ...prev, [campo]: valor }));
   };
 
   const guardarEmpleado = async () => {
-    if (!nuevoEmpleado.nombre || !nuevoEmpleado.apellido || !nuevoEmpleado.salario) {
-      Alert.alert("Error", "Por favor, complete todos los campos.");
-      return;
-    }
+    if (!nuevoEmpleado.nombre || !nuevoEmpleado.apellido || !nuevoEmpleado.salario) return Alert.alert("Error", "Complete todos los campos");
     const salario = parseFloat(nuevoEmpleado.salario);
-    if (isNaN(salario)) {
-      Alert.alert("Error", "El salario debe ser un número válido.");
-      return;
-    }
+    if (isNaN(salario)) return Alert.alert("Error", "Salario inválido");
+
     try {
-      await addDoc(collection(db, "empleados"), {
-        nombre: nuevoEmpleado.nombre,
-        apellido: nuevoEmpleado.apellido,
-        salario: salario,
-      });
-      setNuevoEmpleado({ nombre: "", apellido: "", salario: "" });
-      setIdEmpleado(null);
-      setModoEdicion(false);
+      await addDoc(collection(db, "empleados"), { ...nuevoEmpleado, salario });
+      limpiarFormulario();
       cargarDatos();
-      Alert.alert("Éxito", "Empleado guardado correctamente.");
-    } catch (error) {
-      console.error("Error al guardar empleado:", error);
-      Alert.alert("Error", "No se pudo guardar el empleado: " + error.message);
+      Alert.alert("Éxito", "Guardado");
+    } catch (e) {
+      Alert.alert("Error", "No se guardó");
     }
   };
 
   const actualizarEmpleado = async () => {
-    if (!nuevoEmpleado.nombre || !nuevoEmpleado.apellido || !nuevoEmpleado.salario) {
-      Alert.alert("Error", "Por favor, complete todos los campos.");
-      return;
-    }
-    if (!idEmpleado) {
-      Alert.alert("Error", "No se ha seleccionado un empleado para actualizar.");
-      return;
-    }
+    if (!idEmpleado) return Alert.alert("Error", "Seleccione empleado");
     const salario = parseFloat(nuevoEmpleado.salario);
-    if (isNaN(salario)) {
-      Alert.alert("Error", "El salario debe ser un número válido.");
-      return;
-    }
+    if (isNaN(salario)) return Alert.alert("Error", "Salario inválido");
+
     try {
-      console.log("Actualizando empleado con ID:", idEmpleado, "Datos:", nuevoEmpleado);
-      const empleadoRef = doc(db, "empleados", idEmpleado);
-      await updateDoc(empleadoRef, {
-        nombre: nuevoEmpleado.nombre,
-        apellido: nuevoEmpleado.apellido,
-        salario: salario,
-      });
-      setNuevoEmpleado({ nombre: "", apellido: "", salario: "" });
-      setIdEmpleado(null);
-      setModoEdicion(false);
+      await updateDoc(doc(db, "empleados", idEmpleado), { ...nuevoEmpleado, salario });
+      limpiarFormulario();
       cargarDatos();
-      Alert.alert("Éxito", "Empleado actualizado correctamente.");
-    } catch (error) {
-      console.error("Error al actualizar empleado:", error);
-      Alert.alert("Error", "No se pudo actualizar el empleado: " + error.message);
+      Alert.alert("Éxito", "Actualizado");
+    } catch (e) {
+      Alert.alert("Error", "No se actualizó");
     }
   };
 
-  const editarEmpleado = (empleado) => {
-    console.log("Empleado seleccionado para editar:", empleado);
-    if (!empleado.id) {
-      Alert.alert("Error", "El empleado no tiene un ID válido.");
-      return;
-    }
+  const editarEmpleado = (emp) => {
     setNuevoEmpleado({
-      nombre: empleado.nombre || "",
-      apellido: empleado.apellido || "",
-      salario: empleado.salario ? empleado.salario.toString() : "",
+      nombre: emp.nombre || "",
+      apellido: emp.apellido || "",
+      salario: emp.salario?.toString() || "",
     });
-    setIdEmpleado(empleado.id);
+    setIdEmpleado(emp.id);
     setModoEdicion(true);
   };
 
   const eliminarEmpleado = async (id) => {
     try {
-      console.log("Eliminando empleado con ID:", id);
       await deleteDoc(doc(db, "empleados", id));
       cargarDatos();
-      Alert.alert("Éxito", "Empleado eliminado correctamente.");
-    } catch (error) {
-      console.error("Error al eliminar empleado:", error);
-      Alert.alert("Error", "No se pudo eliminar el empleado: " + error.message);
+      Alert.alert("Éxito", "Eliminado");
+    } catch (e) {
+      Alert.alert("Error", "No se eliminó");
     }
   };
 
-  useEffect(() => {
-    cargarDatos();
-  }, []);
+  const limpiarFormulario = () => {
+    setNuevoEmpleado({ nombre: "", apellido: "", salario: "" });
+    setIdEmpleado(null);
+    setModoEdicion(false);
+  };
+
+  // GENERAR EXCEL
+  const generarExcel = async () => {
+    if (empleados.length === 0) return Alert.alert("Sin datos", "No hay empleados");
+
+    Alert.alert("Generando", "Creando Excel...");
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(empleados),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err);
+      }
+
+      const blob = await res.blob();
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = reader.result.split(",")[1];
+        const uri = `${FileSystem.documentDirectory}empleados.xlsx`;
+        await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
+        await Sharing.shareAsync(uri);
+        Alert.alert("Éxito", "Excel generado");
+      };
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "No se generó el archivo");
+    }
+  };
+
+  useEffect(() => { cargarDatos(); }, []);
 
   return (
     <View style={styles.container}>
@@ -138,12 +135,17 @@ const Empleados = () => {
         eliminarEmpleado={eliminarEmpleado}
         editarEmpleado={editarEmpleado}
       />
+      <TouchableOpacity style={styles.btn} onPress={generarExcel}>
+        <Text style={styles.btnText}>Generar Excel</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 2, padding: 8 },
+  container: { flex: 1, padding: 16, backgroundColor: "#f9f9f9" },
+  btn: { backgroundColor: "#0d6efd", padding: 16, borderRadius: 12, alignItems: "center", marginTop: 20 },
+  btnText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
 
 export default Empleados;
