@@ -3,23 +3,25 @@ import { View, Text, Button, StyleSheet } from "react-native";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./src/database/firebaseconfig.js";
 
-import Productos from "./src/views/Productos";
-import Clientes from "./src/views/Clientes";
-import Empleados from "./src/views/Empleados";
+import Productos from "./src/views/Productos.js";
+import Clientes from "./src/views/Clientes.js";
+import Empleados from "./src/views/Empleados.js";
+import ProductosRealtime from "./src/views/ProductosRealtime.js";
+import IMCRealtime from "./src/views/IMCRealtime.js";
 import Login from "./src/Components/Login.js";
 
-// Lista de pantallas (sin Login)
 const screens = [
   { key: "productos", name: "Productos", component: Productos },
   { key: "clientes", name: "Clientes", component: Clientes },
   { key: "empleados", name: "Empleados", component: Empleados },
+  { key: "realtime", name: "Productos RT", component: ProductosRealtime },
+  { key: "imc", name: "Calculadora IMC", component: IMCRealtime },
 ];
 
 export default function App() {
   const [usuario, setUsuario] = useState(null);
   const [index, setIndex] = useState(0);
 
-  // Verificar autenticación
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUsuario(user);
@@ -31,33 +33,38 @@ export default function App() {
   const goPrev = () => setIndex((i) => Math.max(i - 1, 0));
 
   const cerrarSesion = () => {
-    signOut(auth).catch((error) => console.error("Error al cerrar sesión:", error));
+    signOut(auth)
+      .then(() => {
+        setUsuario(null);
+        setIndex(0);
+      })
+      .catch((error) => console.error("Error al cerrar sesión:", error));
   };
 
-  // Si no hay usuario → mostrar Login
   if (!usuario) {
     return <Login onLoginSuccess={() => setUsuario(auth.currentUser)} />;
   }
 
-  // Si hay usuario → mostrar app con navegación
   const CurrentScreen = screens[index].component;
 
   return (
     <View style={styles.app}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>{screens[index].name}</Text>
         <Button title="Cerrar Sesión" onPress={cerrarSesion} color="#d32f2f" />
       </View>
 
-      {/* Contenido */}
       <View style={styles.content}>
         <CurrentScreen />
       </View>
 
-      {/* Footer - Navegación */}
       <View style={styles.footer}>
-        <Button title="Arriba" onPress={goPrev} disabled={index === 0} />
+        <Button
+          title="Arriba"
+          onPress={goPrev}
+          disabled={index === 0}
+          color={index === 0 ? "#aaa" : "#007bff"}
+        />
         <Text style={styles.footerLabel}>
           {index + 1} / {screens.length}
         </Text>
@@ -65,46 +72,49 @@ export default function App() {
           title="Abajo"
           onPress={goNext}
           disabled={index === screens.length - 1}
+          color={index === screens.length - 1 ? "#aaa" : "#007bff"}
         />
       </View>
     </View>
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
-  app: { flex: 1, backgroundColor: "#fff" },
+  app: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
   header: {
-    height: 60,
+    height: 70,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    backgroundColor: "#f7f7f7",
-    borderBottomWidth: 1,
-    borderColor: "#eee",
+    paddingHorizontal: 20,
+    backgroundColor: "#0d6efd",
+    elevation: 4,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
   },
   content: {
     flex: 1,
   },
   footer: {
-    height: 60,
+    height: 70,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    borderTopWidth: 1,
-    borderColor: "#eee",
+    paddingHorizontal: 30,
     backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+    elevation: 5,
   },
   footerLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#555",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333",
   },
 });
